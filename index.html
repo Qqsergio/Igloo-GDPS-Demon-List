@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Igloo GDPS Demon List</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧊%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef8fe;--bg2:#bcdff5;--card:rgba(255,255,255,.88);--tx:#16324f;--mu:#5b7d99;--ac:#2f8fd8;--bd:#c5e1f5;--ok:#1f9d74;--on:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1d33;--bg2:#17335a;--card:rgba(22,45,75,.9);--tx:#eaf5ff;--mu:#97b6d2;--ac:#7cc4ff;--bd:#2c4d73;--ok:#5ee6b8;--on:#0c1d33}}
+*{box-sizing:border-box}
+body{margin:0;color:var(--tx);font:16px/1.5 Quicksand,system-ui,sans-serif;background:linear-gradient(180deg,var(--bg2),var(--bg) 70%) fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 20px 30px,#fff,transparent),radial-gradient(2px 2px at 90px 80px,#fff,transparent),radial-gradient(4px 4px at 160px 20px,#fff,transparent),radial-gradient(2px 2px at 60px 140px,#fff,transparent),radial-gradient(3px 3px at 130px 120px,#fff,transparent);background-size:200px 200px;animation:snow 14s linear infinite}
+@keyframes snow{to{background-position:40px 200px}}
+@media (prefers-reduced-motion:reduce){body::before{animation:none}}
+header,main{position:relative;z-index:1}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--card);backdrop-filter:blur(6px);border-bottom:1px solid var(--bd);box-shadow:0 2px 14px rgba(40,110,170,.15)}
+h1{margin:0;font-size:1.35rem;color:var(--ac)}nav{display:flex;gap:6px;flex-wrap:wrap}
+button,input,textarea{font:inherit;color:var(--tx)}
+button{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:6px 14px;cursor:pointer;font-weight:700;font-size:.9rem}
+button:hover{border-color:var(--ac)}button.on,button.pri{background:var(--ac);border-color:var(--ac);color:var(--on)}button.sm{padding:2px 10px;font-size:.8rem}
+input,textarea{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px;width:100%}
+main{max-width:860px;margin:0 auto;padding:20px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 4px 16px rgba(40,110,170,.12)}
+.row{display:flex;gap:12px;align-items:center;cursor:pointer}.rank{font-size:1.5rem;font-weight:700;color:var(--ac);min-width:56px}
+.mu{color:var(--mu);font-size:.95rem}.pts{margin-left:auto;font-weight:700}
+.det{margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.f{display:grid;gap:8px;margin:10px 0}a{color:var(--ac)}
+.msg{padding:10px;border-radius:10px;background:var(--card);border:1px solid var(--ac);margin-bottom:12px}
+table{width:100%;border-collapse:collapse}td,th{padding:8px;text-align:left;border-bottom:1px solid var(--bd)}
+.wrap{overflow-x:auto}.mod{color:var(--ok);font-weight:700}pre{white-space:pre-wrap;font:inherit;margin:0}
+.thumb{position:relative;flex:none;width:128px;height:72px;border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#d6ecfb,#f4fbff);display:flex;align-items:center;justify-content:center;color:#16324f;text-decoration:none;font-size:1.4rem}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .pl{position:absolute;right:6px;bottom:6px;background:rgba(11,42,74,.78);color:#fff;border-radius:999px;font-size:.75rem;line-height:1.4;padding:1px 8px}
+iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin:8px 0}
+</style></head><body>
+<header><h1>🧊 Igloo GDPS Demon List</h1><nav id="nav"></nav><div id="acct"></div></header>
+<main id="app"><p class="mu">Loading…</p></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const SB=supabase.createClient("https://qjounoizosjcifevmast.supabase.co","sb_publishable_-Ax_i9VzOqfijKWA4s51Mg_ds3Z_zcP");
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ord=n=>{const v=n%100,s=["th","st","nd","rd"];return n+(s[(v-20)%10]||s[v]||s[0])};
+const pts=r=>Math.max(1,Math.round(10000*Math.pow(0.93,r-1))/100);
+const url=u=>/^https?:\/\//i.test(u)?u:"";
+const yt=u=>(String(u).match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)||[])[1];
+const jpg=t=>/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(t||"")?t:"";
+let me=null,uid=null,tab="list",open=null,flash="",delId=null,pthumb="",S={levels:[],recs:[],subs:[],rules:""};
+const isMod=()=>me&&me.toLowerCase()==="sergio";
+const say=m=>{flash=m;render()};
+const same=(a,b)=>a.toLowerCase()===b.toLowerCase();
+const ranked=()=>S.levels.map((l,i)=>({...l,rank:i+1}));
+
+async function load(){
+  const [l,r,s,u]=await Promise.all([SB.from("levels").select("*").order("position"),SB.from("records").select("*").order("created_at"),SB.from("submissions").select("*").order("created_at"),SB.from("rules").select("text").eq("id",1).maybeSingle()]);
+  if(l.error){$("#app").innerHTML='<div class="msg">Couldn’t reach the database: '+esc(l.error.message)+'. Did you run setup.sql?</div>';return}
+  S.levels=l.data||[];S.recs=r.data||[];S.subs=s.data||[];S.rules=(u.data||{}).text||"";render();
+}
+async function setMe(sess){
+  me=null;uid=sess?sess.user.id:null;
+  if(sess){const{data}=await SB.from("profiles").select("username").eq("id",uid).maybeSingle();me=data?data.username:null}
+  await load();
+}
+SB.auth.onAuthStateChange((_,s)=>setTimeout(()=>setMe(s),0));
+async function find(n){const{data}=await SB.from("profiles").select("username").ilike("username",n.replace(/[_%\\]/g,"\\$&")).maybeSingle();return data?data.username:null}
+function readThumb(f){return new Promise((res,rej)=>{if(!f)return rej();const fr=new FileReader();fr.onerror=rej;fr.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const c=document.createElement("canvas");c.width=320;c.height=180;const x=c.getContext("2d"),s=Math.max(320/im.width,180/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,(320-w)/2,(180-h)/2,w,h);res(c.toDataURL("image/jpeg",0.75))};im.src=fr.result};fr.readAsDataURL(f)})}
+async function reorder(ids){await Promise.all(ids.map((id,i)=>SB.from("levels").update({position:i}).eq("id",id)));await load()}
+
+function chrome(){
+  const t=[["list","List"],["board","Leaderboard"],["rules","Rules"]];
+  if(isMod())t.push(["subs","Submissions"+(S.subs.length?" ("+S.subs.length+")":"")],["add","Add level"]);
+  $("#nav").innerHTML=t.map(([k,l])=>`<button class="${tab===k?"on":""}" data-t="${k}">${l}</button>`).join("");
+  $("#nav").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;flash="";render()});
+  $("#acct").innerHTML=me?`<span class="${isMod()?"mod":""}">${esc(me)}${isMod()?" · moderator":""}</span> <button class="sm" id="lo">Log out</button>`:`<button class="sm" id="lg">Log in / Register</button>`;
+  if(me)$("#lo").onclick=()=>SB.auth.signOut();else $("#lg").onclick=()=>{tab="auth";render()};
+}
+function render(){
+  chrome();
+  const v={list:vList,board:vBoard,rules:vRules,subs:vSubs,add:vAdd,auth:vAuth}[tab]||vList;
+  $("#app").innerHTML=(flash?`<div class="msg">${esc(flash)}</div>`:"")+v();bind();
+}
+function thumbOf(l){
+  const id=yt(l.video),src=jpg(l.thumb)||(id?`https://img.youtube.com/vi/${id}/mqdefault.jpg`:"");
+  return `<a class="thumb" href="${esc(url(l.video))}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${src?`<img src="${esc(src)}" alt=""><span class="pl">▶ Watch</span>`:"▶"}</a>`;
+}
+function vList(){
+  const L=ranked();if(!L.length)return `<p class="mu">No levels yet.${isMod()?" Use “Add level” to create the first one.":""}</p>`;
+  return L.map(l=>{
+    const rs=S.recs.filter(r=>r.level_id===l.id),o=open===l.id,id=yt(l.video);
+    return `<div class="card"><div class="row" data-o="${l.id}"><span class="rank">#${l.rank}</span>${thumbOf(l)}<div><b>${esc(l.name)}</b><div class="mu">by ${esc(l.creator)} · verified by ${esc(l.verifier)}</div></div><span class="pts">${pts(l.rank)} pts</span>${isMod()?`<span style="display:flex;flex-direction:column;gap:2px"><button class="sm" data-up="${l.id}">▲</button><button class="sm" data-dn="${l.id}">▼</button></span>`:""}</div>
+    ${o?`<div class="det">${id?`<iframe src="https://www.youtube.com/embed/${id}" allowfullscreen loading="lazy"></iframe>`:""}<p>Verifier: <b>${esc(l.verifier)}</b></p>
+    <b>Victors</b>${rs.length?`<ol style="margin:6px 0;padding:0;list-style:none">${rs.map((r,i)=>`<li>${ord(i+1)} victor — ${esc(r.username)} ${url(r.video)?`<a href="${esc(r.video)}" target="_blank" rel="noopener">video</a>`:""} ${isMod()?`<button class="sm" data-rm="${r.id}">remove</button>`:""}</li>`).join("")}</ol>`:`<p class="mu">No victors yet.</p>`}
+    ${!me?`<p class="mu">Log in to submit a completion.</p>`:!isMod()?subForm(l,rs):""}
+    ${isMod()?`<div class="f"><button class="sm" data-del="${l.id}" style="justify-self:start">${delId===l.id?"Click again to confirm delete":"delete level"}</button><label class="mu">Change thumbnail <input id="tf" type="file" accept="image/*"></label><div style="display:flex;gap:6px"><input id="mv" type="number" min="1" max="${L.length}" placeholder="Move to placement #"><button class="sm" data-mv="${l.id}">Move</button></div></div>`:""}</div>`:""}</div>`}).join("");
+}
+function subForm(l,rs){
+  if(same(l.verifier,me)||rs.some(r=>same(r.username,me)))return `<p class="mu">You’ve already beaten this level.</p>`;
+  if(S.subs.some(s=>s.level_id===l.id&&s.user_id===uid))return `<p class="mu">Your completion is pending review.</p>`;
+  return `<div class="f"><input id="sv" placeholder="YouTube video proof of your completion"><button class="pri" data-sub="${l.id}">Submit completion</button></div>`;
+}
+function vBoard(){
+  const P={};const add=(u,p)=>{const k=u.toLowerCase();(P[k]=P[k]||{n:u,p:0,c:0});P[k].p+=p;P[k].c++};
+  ranked().forEach(l=>{add(l.verifier,pts(l.rank));S.recs.filter(r=>r.level_id===l.id).forEach(r=>add(r.username,pts(l.rank)))});
+  const a=Object.values(P).sort((x,y)=>y.p-x.p);if(!a.length)return `<p class="mu">No points yet.</p>`;
+  return `<p class="mu">100 points for #1, each placement down is worth 7% less (minimum 1). Verifiers and victors earn a level’s points. Creators don’t.</p><div class="card wrap"><table><tr><th>#</th><th>Player</th><th>Levels</th><th>Points</th></tr>${a.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.n)}</td><td>${x.c}</td><td>${Math.round(x.p*100)/100}</td></tr>`).join("")}</table></div>`;
+}
+function vRules(){return `<div class="card">${isMod()?`<textarea id="rt" rows="14" placeholder="Write the rules here…">${esc(S.rules)}</textarea><div class="f"><button class="pri" id="rs">Save rules</button></div>`:S.rules?`<pre>${esc(S.rules)}</pre>`:`<p class="mu">No rules written yet.</p>`}</div>`}
+function vSubs(){
+  if(!isMod())return "";if(!S.subs.length)return `<p class="mu">No pending submissions.</p>`;
+  return S.subs.map(s=>`<div class="card"><b>${esc(s.username)}</b> beat <b>${esc((S.levels.find(l=>l.id===s.level_id)||{}).name||"(deleted level)")}</b><div><a href="${esc(url(s.video))}" target="_blank" rel="noopener">${esc(s.video)}</a></div><div class="f"><div><button class="pri sm" data-ac="${s.id}">Accept</button> <button class="sm" data-rj="${s.id}">Reject</button></div></div></div>`).join("");
+}
+function vAdd(){
+  if(!isMod())return "";
+  return `<div class="card"><h3 style="margin-top:0">Add a level</h3><div class="f"><input id="an" placeholder="Level name"><input id="ac" placeholder="Creator (registered username)"><input id="av" placeholder="Verifier (registered username)"><input id="ay" placeholder="YouTube video proof of completion"><label class="mu">Thumbnail image (optional, uses the YouTube thumbnail if blank)<input id="at" type="file" accept="image/*"></label>${pthumb?`<img id="tp" alt="" src="${pthumb}" style="max-width:200px;border-radius:8px">`:""}<input id="ap" type="number" min="1" placeholder="Placement (blank = bottom)"><div id="ae" style="color:var(--ac)"></div><button class="pri" id="ad">Add level</button></div></div>`;
+}
+function vAuth(){return `<div class="card"><div class="f"><input id="un" placeholder="Username (letters, numbers, _ or -)" maxlength="20"><input id="pw" type="password" placeholder="Password (6+ characters)"><div style="display:flex;gap:8px"><button class="pri" id="li">Log in</button><button id="rg">Register</button></div></div></div>`}
+
+const val=id=>($("#"+id)||{}).value?.trim()||"";
+function bind(){
+  document.querySelectorAll("[data-o]").forEach(e=>e.onclick=()=>{open=open===e.dataset.o?null:e.dataset.o;render()});
+  const on=(sel,fn)=>document.querySelectorAll(sel).forEach(e=>e.onclick=ev=>{ev.stopPropagation();fn(e)});
+  const run=async(p,m)=>{const r=await p;if(r&&r.error)return say("Error: "+r.error.message);await load();if(m)say(m)};
+  const ids=()=>S.levels.map(l=>l.id);
+  const mv=(id,to)=>{const a=ids(),i=a.indexOf(id);if(i<0||to<0||to>=a.length)return;a.splice(i,1);a.splice(to,0,id);reorder(a)};
+  on("[data-up]",e=>mv(e.dataset.up,ids().indexOf(e.dataset.up)-1));
+  on("[data-dn]",e=>mv(e.dataset.dn,ids().indexOf(e.dataset.dn)+1));
+  on("[data-mv]",e=>{const n=parseInt(val("mv"));if(n>0)mv(e.dataset.mv,n-1)});
+  on("[data-del]",async e=>{const id=e.dataset.del;if(delId!==id){delId=id;return render()}delId=null;open=null;
+    const r=await SB.from("levels").delete().eq("id",id);if(r.error)return say("Error: "+r.error.message);await reorder(ids().filter(x=>x!==id))});
+  on("[data-sub]",e=>{const v=val("sv");if(!url(v))return say("Enter a valid video link (starting with http).");
+    run(SB.from("submissions").insert({level_id:e.dataset.sub,username:me,video:v}),"Submitted! A moderator will review it.")});
+  on("[data-ac]",e=>run(SB.rpc("accept_submission",{sid:e.dataset.ac}),"Accepted."));
+  on("[data-rj]",e=>run(SB.from("submissions").delete().eq("id",e.dataset.rj),"Rejected."));
+  on("[data-rm]",e=>run(SB.from("records").delete().eq("id",e.dataset.rm),"Victor removed."));
+  const rs=$("#rs");if(rs)rs.onclick=()=>run(SB.from("rules").upsert({id:1,text:$("#rt").value}),"Rules saved.");
+  const tf=$("#tf");if(tf)tf.onchange=async()=>{try{const t=await readThumb(tf.files[0]);run(SB.from("levels").update({thumb:t}).eq("id",open),"Thumbnail updated.")}catch(e){say("Couldn’t read that image.")}};
+  const at=$("#at");if(at)at.onchange=async()=>{try{pthumb=await readThumb(at.files[0])}catch(e){return}let p=$("#tp");if(!p){p=document.createElement("img");p.id="tp";p.style.cssText="max-width:200px;border-radius:8px";at.parentNode.appendChild(p)}p.src=pthumb};
+  const ad=$("#ad");if(ad)ad.onclick=async()=>{
+    const ae=m=>{$("#ae").textContent=m},n=val("an"),c=val("ac"),v=val("av"),y=val("ay");
+    if(!n||!c||!v||!url(y))return ae("Fill in every field (video must be a link starting with http).");
+    const [cn,vn]=await Promise.all([find(c),find(v)]);
+    if(!cn)return ae("Creator “"+c+"” isn’t a registered account.");if(!vn)return ae("Verifier “"+v+"” isn’t a registered account.");
+    const r=await SB.from("levels").insert({name:n,creator:cn,verifier:vn,video:y,thumb:pthumb||null,position:9999}).select().single();
+    if(r.error)return ae(r.error.message);
+    const a=ids().filter(x=>x!==r.data.id),p=parseInt(val("ap"));a.splice(p>0?Math.min(p-1,a.length):a.length,0,r.data.id);
+    pthumb="";tab="list";await reorder(a);say("Level added.")};
+  const li=$("#li");if(li)li.onclick=async()=>{const n=val("un"),p=$("#pw").value;if(!n||!p)return say("Enter username and password.");
+    const{error}=await SB.auth.signInWithPassword({email:n.toLowerCase()+"@igloo-gdps.com",password:p});
+    if(error)return say("Wrong username or password.");tab="list";flash=""};
+  const rg=$("#rg");if(rg)rg.onclick=async()=>{const n=val("un"),p=$("#pw").value;
+    if(!/^[A-Za-z0-9_-]{3,20}$/.test(n))return say("Username: 3–20 letters, numbers, _ or -.");
+    if(p.length<6)return say("Password must be at least 6 characters.");
+    if(await find(n))return say("That username is already taken.");
+    const{error}=await SB.auth.signUp({email:n.toLowerCase()+"@igloo-gdps.com",password:p,options:{data:{username:n}}});
+    if(error)return say(error.message);tab="list";flash=""};
+}
+</script></body></html>
