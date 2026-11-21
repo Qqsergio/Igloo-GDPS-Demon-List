@@ -32,6 +32,29 @@ table{width:100%;border-collapse:collapse}td,th{padding:8px;text-align:left;bord
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .thumb .pl{position:absolute;right:6px;bottom:6px;background:rgba(11,42,74,.78);color:#fff;border-radius:999px;font-size:.75rem;line-height:1.4;padding:1px 8px}
 iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin:8px 0}
+
+.card{padding:18px}.row{gap:16px;flex-wrap:wrap}.row b{font-size:1.15rem}
+.thumb{width:clamp(150px,30vw,192px);height:auto;aspect-ratio:16/9}
+.top1,.top2,.top3{position:relative;overflow:hidden;border:3px solid transparent;background-origin:padding-box,border-box;background-clip:padding-box,border-box;background-size:100% 100%,300% 300%}
+.top1::before,.top1::after,.top2::after{content:"";position:absolute;pointer-events:none}
+.top1{padding:30px;margin-bottom:16px;background-image:linear-gradient(var(--bg),var(--bg)),linear-gradient(120deg,#ffd54a,#fff6bf,#ffb300,#fff6bf,#ffd54a);box-shadow:0 0 22px rgba(255,200,40,.45);animation:gborder 4s linear infinite,glow1 2.5s ease-in-out infinite}
+.top1 .thumb{width:clamp(210px,46vw,340px);box-shadow:0 0 26px rgba(255,190,30,.75);border-color:#ffd54a}
+.top1 .rank{font-size:3.2rem;color:#e0a100;text-shadow:0 0 16px rgba(255,200,40,.85)}.top1 .row b{font-size:2rem}.top1 .pts{font-size:1.4rem;color:#e0a100}
+.top1::before{inset:0;background-image:radial-gradient(2px 2px at 12% 25%,#ffe27a,transparent),radial-gradient(3px 3px at 80% 20%,#fff,transparent),radial-gradient(2px 2px at 55% 80%,#ffe27a,transparent),radial-gradient(3px 3px at 30% 75%,#fff,transparent),radial-gradient(2px 2px at 92% 70%,#ffe27a,transparent);animation:twinkle 1.8s ease-in-out infinite}
+.top1::after{top:0;left:-60%;width:35%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:sweep 3.5s ease-in-out infinite}
+.top2{padding:24px;margin-bottom:14px;background-image:linear-gradient(var(--bg),var(--bg)),linear-gradient(120deg,#c9d3dc,#fff,#9aa8b6,#fff,#c9d3dc);box-shadow:0 0 16px rgba(170,190,210,.5);animation:gborder 7s linear infinite,glow2 3.5s ease-in-out infinite}
+.top2 .thumb{width:clamp(180px,38vw,272px);box-shadow:0 0 16px rgba(170,190,210,.7)}
+.top2 .rank{font-size:2.4rem;color:#7d8ea0;text-shadow:0 0 10px rgba(190,205,220,.9)}.top2 .row b{font-size:1.5rem}
+.top2::after{top:0;left:-60%;width:30%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);animation:sweep 6s ease-in-out infinite}
+.top3{padding:20px;background-image:linear-gradient(var(--bg),var(--bg)),linear-gradient(120deg,#b87333,#e9b583,#b87333);box-shadow:0 0 12px rgba(205,127,50,.4);animation:glow3 3s ease-in-out infinite}
+.top3 .thumb{width:clamp(165px,33vw,224px)}.top3 .rank{font-size:1.9rem;color:#b3692b}.top3 .row b{font-size:1.3rem}
+@keyframes gborder{to{background-position:0 0,300% 0}}
+@keyframes glow1{50%{box-shadow:0 0 38px 8px rgba(255,200,40,.6)}}
+@keyframes glow2{50%{box-shadow:0 0 26px 4px rgba(190,205,225,.65)}}
+@keyframes glow3{50%{box-shadow:0 0 20px 3px rgba(205,127,50,.55)}}
+@keyframes twinkle{50%{opacity:.25}}
+@keyframes sweep{0%{left:-60%}60%,100%{left:130%}}
+@media (prefers-reduced-motion:reduce){.top1,.top2,.top3,.top1::before,.top1::after,.top2::after{animation:none}}
 </style></head><body>
 <header><h1>🧊 Igloo GDPS Demon List</h1><nav id="nav"></nav><div id="acct"></div></header>
 <main id="app"><p class="mu">Loading…</p></main>
@@ -86,11 +109,11 @@ function vList(){
   const L=ranked();if(!L.length)return `<p class="mu">No levels yet.${isMod()?" Use “Add level” to create the first one.":""}</p>`;
   return L.map(l=>{
     const rs=S.recs.filter(r=>r.level_id===l.id),o=open===l.id,id=yt(l.video);
-    return `<div class="card"><div class="row" data-o="${l.id}"><span class="rank">#${l.rank}</span>${thumbOf(l)}<div><b>${esc(l.name)}</b><div class="mu">by ${esc(l.creator)} · verified by ${esc(l.verifier)}</div></div><span class="pts">${pts(l.rank)} pts</span>${isMod()?`<span style="display:flex;flex-direction:column;gap:2px"><button class="sm" data-up="${l.id}">▲</button><button class="sm" data-dn="${l.id}">▼</button></span>`:""}</div>
+    return `<div class="card ${l.rank<=3?"top"+l.rank:""}"><div class="row" data-o="${l.id}"><span class="rank">${["","👑","🥈","🥉"][l.rank]||""}#${l.rank}</span>${thumbOf(l)}<div><b>${esc(l.name)}</b><div class="mu">by ${esc(l.creator)} · verified by ${esc(l.verifier)}</div></div><span class="pts">${pts(l.rank)} pts</span>${isMod()?`<span style="display:flex;flex-direction:column;gap:2px"><button class="sm" data-up="${l.id}">▲</button><button class="sm" data-dn="${l.id}">▼</button></span>`:""}</div>
     ${o?`<div class="det">${id?`<iframe src="https://www.youtube.com/embed/${id}" allowfullscreen loading="lazy"></iframe>`:""}<p>Verifier: <b>${esc(l.verifier)}</b></p>
     <b>Victors</b>${rs.length?`<ol style="margin:6px 0;padding:0;list-style:none">${rs.map((r,i)=>`<li>${ord(i+1)} victor — ${esc(r.username)} ${url(r.video)?`<a href="${esc(r.video)}" target="_blank" rel="noopener">video</a>`:""} ${isMod()?`<button class="sm" data-rm="${r.id}">remove</button>`:""}</li>`).join("")}</ol>`:`<p class="mu">No victors yet.</p>`}
     ${!me?`<p class="mu">Log in to submit a completion.</p>`:!isMod()?subForm(l,rs):""}
-    ${isMod()?`<div class="f"><button class="sm" data-del="${l.id}" style="justify-self:start">${delId===l.id?"Click again to confirm delete":"delete level"}</button><label class="mu">Change thumbnail <input id="tf" type="file" accept="image/*"></label><div style="display:flex;gap:6px"><input id="mv" type="number" min="1" max="${L.length}" placeholder="Move to placement #"><button class="sm" data-mv="${l.id}">Move</button></div></div>`:""}</div>`:""}</div>`}).join("");
+    ${isMod()?`<div class="f"><button class="sm" data-del="${l.id}" style="justify-self:start">${delId===l.id?"Click again to confirm delete":"delete level"}</button><div style="display:flex;gap:6px;flex-wrap:wrap"><input id="vn" placeholder="Add victor: username" style="flex:1 1 140px"><input id="vv" placeholder="Video link (optional)" style="flex:2 1 180px"><button class="sm" data-av="${l.id}">Add victor</button></div><label class="mu">Change thumbnail <input id="tf" type="file" accept="image/*"></label><div style="display:flex;gap:6px"><input id="mv" type="number" min="1" max="${L.length}" placeholder="Move to placement #"><button class="sm" data-mv="${l.id}">Move</button></div></div>`:""}</div>`:""}</div>`}).join("");
 }
 function subForm(l,rs){
   if(same(l.verifier,me)||rs.some(r=>same(r.username,me)))return `<p class="mu">You’ve already beaten this level.</p>`;
@@ -129,6 +152,7 @@ function bind(){
   on("[data-ac]",e=>run(SB.rpc("accept_sub",{p_tok:tok,p_id:e.dataset.ac}),"Accepted."));
   on("[data-rj]",e=>run(SB.rpc("reject_sub",{p_tok:tok,p_id:e.dataset.rj}),"Rejected."));
   on("[data-rm]",e=>run(SB.rpc("remove_record",{p_tok:tok,p_id:e.dataset.rm}),"Victor removed."));
+  on("[data-av]",e=>{const n=val("vn"),v=val("vv");if(!n)return say("Enter a username.");if(v&&!url(v))return say("Video must be a link starting with http.");run(SB.rpc("add_victor",{p_tok:tok,p_id:e.dataset.av,p_name:n,p_video:v}),n+" added as a victor.")});
   const rs=$("#rs");if(rs)rs.onclick=()=>run(SB.rpc("save_rules",{p_tok:tok,p_text:$("#rt").value}),"Rules saved.");
   const tf=$("#tf");if(tf)tf.onchange=async()=>{try{const t=await readThumb(tf.files[0]);run(SB.rpc("set_thumb",{p_tok:tok,p_id:open,p_thumb:t}),"Thumbnail updated.")}catch(e){say("Couldn’t read that image.")}};
   const at=$("#at");if(at)at.onchange=async()=>{try{pthumb=await readThumb(at.files[0])}catch(e){return}let p=$("#tp");if(!p){p=document.createElement("img");p.id="tp";p.style.cssText="max-width:200px;border-radius:8px";at.parentNode.appendChild(p)}p.src=pthumb};
